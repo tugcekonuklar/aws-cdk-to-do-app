@@ -3,8 +3,6 @@ import {Bucket, BucketEncryption, IBucket} from "aws-cdk-lib/aws-s3";
 import {BucketDeployment, Source} from "aws-cdk-lib/aws-s3-deployment";
 import {AllowedMethods, Distribution, OriginAccessIdentity, ViewerProtocolPolicy} from "aws-cdk-lib/aws-cloudfront";
 import {S3Origin} from "aws-cdk-lib/aws-cloudfront-origins";
-import {CnameRecord, IHostedZone, PublicHostedZone} from "aws-cdk-lib/aws-route53";
-import {ICertificate} from "aws-cdk-lib/aws-certificatemanager";
 
 export interface FrontendResources {
 }
@@ -42,14 +40,7 @@ export class FrontendResources {
         return new S3Origin(s3Bucket, {originAccessIdentity: originAccess})
     }
 
-    private createHostedZone(): IHostedZone {
-        return new PublicHostedZone(this.scope, 'aws-to-do-app-hosted-zone', {
-            zoneName: this.zoneName,
-            comment: 'My AWS To-Do App hosted Zone'
-        });
-    }
-
-    private createCfnDistribution(s3Origin: S3Origin, certificate?: ICertificate): Distribution {
+    private createCfnDistribution(s3Origin: S3Origin): Distribution {
         return new Distribution(this.scope, 'aws-to-do-app-cfn-distribution', {
             defaultBehavior: {
                 origin: s3Origin,
@@ -67,20 +58,10 @@ export class FrontendResources {
         })
     }
 
-    private createCnameRecord(domainName: string, hostedZone: IHostedZone) {
-        return new CnameRecord(this.scope, 'aws-to-do-app-cname-record', {
-            recordName: `${this.subDomain}`,
-            zone: hostedZone,
-            domainName: domainName
-        })
-    }
-
     private create() {
         const s3Bucket = this.createS3Bucket();
         this.deployS3Bucket(s3Bucket);
         const s3Origin = this.createOriginAccess(s3Bucket);
-        const hostedZone = this.createHostedZone();
-        const distribution = this.createCfnDistribution(s3Origin);
-        this.createCnameRecord(distribution.domainName, hostedZone);
+        this.createCfnDistribution(s3Origin);
     }
 }
