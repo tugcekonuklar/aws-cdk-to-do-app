@@ -6,6 +6,6 @@ export class AwsCdkToDoAppStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        new FrontendResources(scope);
+        new FrontendResources(this);
     }
 }
