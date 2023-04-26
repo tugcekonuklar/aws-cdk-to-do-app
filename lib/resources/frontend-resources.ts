@@ -9,9 +9,6 @@ export interface FrontendResources {
 
 export class FrontendResources {
     private readonly scope: Construct;
-    private readonly zoneName = 'aws-to-do.com';
-    private readonly subDomain = 'my-app';
-    private readonly domainName = `${this.subDomain}.${this.zoneName}`;
     private props?: FrontendResources | null;
 
     constructor(scope: Construct, props?: FrontendResources) {
@@ -54,7 +51,6 @@ export class FrontendResources {
                     responseHttpStatus: 200
                 }
             ],
-            domainNames: [`${this.domainName}`]
         })
     }
 
